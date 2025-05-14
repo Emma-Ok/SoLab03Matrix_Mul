@@ -1,104 +1,98 @@
-# Matrix Multiplication con Procesos en Go y C
-Realizado por Emmanuel Bustamante Valbuena & Sebastian alaya
+<!-- 🎉 Bienvenido al repositorio de Matrix Multiplication con Procesos en Go y C 🚀 -->
 
-# Multiplicación de Matrices con Procesos en C
+# ⚙️ Matrix Multiplication con Procesos en Go y C
 
-Este repositorio contiene la implementación en C para multiplicar dos matrices grandes utilizando:
+**🔧 Autores:** Emmanuel Bustamante Valbuena & Sebastian Amaya Pérez
 
-* **Modo Secuencial** (1 proceso)
-* **Modo Paralelo** (K procesos OS) con comunicación vía **memoria compartida (shm)**
+Este repositorio 🚧 compara dos implementaciones para multiplicar matrices grandes usando procesos del sistema operativo:
 
----
-
-## Resultados de Ejecución en C
-
-| Procesos (K) | Tiempo Secuencial (s) | Tiempo Paralelo (s) | Speedup |
-| -----------: | --------------------: | ------------------: | ------: |
-|            1 |              0.000013 |            0.000606 |   0.02× |
-|            2 |              0.000013 |            0.000838 |   0.02× |
-|            4 |              0.000013 |            0.001196 |   0.01× |
-|            6 |              0.000138 |            0.001717 |   0.08× |
-|            8 |              0.000013 |            0.001839 |   0.01× |
-
-> **Nota:** El tiempo secuencial se midió en una sola ejecución. El tiempo paralelo incluye el overhead de `fork()` y sincronización.
+* 🟢 **C (Memoria Compartida)**
+* 🐹 **Go (Pipes)**
 
 ---
 
-## Conclusión
+## 📊 1. Resultados de Ejecución en C (Memoria Compartida)
 
-* Los resultados muestran speedups muy inferiores a 1 para todas las configuraciones, lo cual indica que el overhead de creación de procesos y el acceso a memoria compartida domina en matrices de pequeño tamaño.
-* Para evidenciar mejoras reales de paralelismo a nivel de proceso, es indispensable usar matrices de mayor dimensión (por ejemplo, ≥500×500), donde el coste computacional supere el overhead de IPC.
-* **Recomendación:** Generar datos sintéticos grandes, volver a medir y graficar el comportamiento de speedup vs. número de procesos.
+| 🔢 Procesos (K) | ⏱️ Secuencial (s) | ⏱️ Paralelo (s) | 📈 Speedup |
+| --------------: | ----------------: | --------------: | ---------: |
+|               1 |          0.000013 |        0.000606 |      0.02× |
+|               2 |          0.000013 |        0.000838 |      0.02× |
+|               4 |          0.000013 |        0.001196 |      0.01× |
+|               6 |          0.000138 |        0.001717 |      0.08× |
+|               8 |          0.000013 |        0.001839 |      0.01× |
 
----
-
-## Uso
-
-1. Preparar archivos de entrada `matriz_a.txt` y `matriz_b.txt`.
-2. Compilar:
-
-   ```bash
-   gcc -o matrix_mul matrix_mul.c -lrt
-   ```
-3. Ejecutar en modo secuencial (por defecto K=4):
-
-   ```bash
-   ./matrix_mul
-   ```
-4. Ejecutar con K procesos:
-
-   ```bash
-   ./matrix_mul <K>
-   ```
-5. La matriz resultado se guarda en `matriz_c.txt`.
-
-
-----
-
-Este repositorio contiene una implementación en Go para multiplicar dos matrices grandes utilizando:
-
-- **Modo Secuencial** (1 proceso)
-- **Modo Paralelo** (K procesos OS) con comunicación vía **pipes**
+> 💡 **Nota:** El tiempo paralelo incluye overhead de `fork()` y sincronización.
 
 ---
 
-## Resultados de Ejecución
+## 📊 2. Resultados de Ejecución en Go (Pipes)
 
-| Procesos (K) | Tiempo Secuencial (s) | Tiempo Paralelo (s) | Speedup |
-|-------------:|----------------------:|--------------------:|--------:|
-|            1 |          0.000002795* |           0.000001476 |   0.53× |
-|            2 |          0.000002882 |           0.000004880 |   0.59× |
-|            4 |          0.000001476 |           0.000007147 |   0.21× |
-|            6 |          0.000002202 |           0.000009401 |   0.23× |
-|            8 |          0.000001498 |           0.000009037 |   0.17× |
+| 🔢 Procesos (K) | ⏱️ Secuencial (s) | ⏱️ Paralelo (s) | 📈 Speedup |
+| --------------: | ----------------: | --------------: | ---------: |
+|               1 |    0.000002795 \* |     0.000001476 |      0.53× |
+|               2 |       0.000002882 |     0.000004880 |      0.59× |
+|               4 |       0.000001476 |     0.000007147 |      0.21× |
+|               6 |       0.000002202 |     0.000009401 |      0.23× |
+|               8 |       0.000001498 |     0.000009037 |      0.17× |
 
-*Nota: el valor de 1 proceso en paralelo se corresponde a `./matrix_mul` sin argumentos y a `./matrix_mul 1`, se promedia para comparación.
-
----
-
-## Conclusión
-
-- El **speedup** obtenido es menor que 1 en todos los casos, indicando que el overhead de creación de procesos y comunicación supera el beneficio computacional para matrices pequeñas.  
-- Para matrices de mayor tamaño, se espera que la ventaja de paralelizar a nivel de procesos sea más evidente.  
-- **Paso siguiente**: probar con matrices de dimensiones ≥500×500 y graficar velocidad vs. número de procesos para analizar la escalabilidad real.
+\*⭐ *K=1 es promedio de `./matrix_mul` y `./matrix_mul 1`.*
 
 ---
 
-## Uso
+## 🔍 3. Análisis Comparativo
 
-1. Genera archivos de entrada `matriz_a.txt` y `matriz_b.txt`.  
-2. Compila:
-   ```bash
-   go build -o matrix_mul matrix_mul.go
-   ```
-3. Ejecuta en modo secuencial (por defecto K=4):
-   ```bash
-   ./matrix_mul
-   ```
-4. Ejecuta con K procesos:
-   ```bash
-   ./matrix_mul <K>
-   ```
-5. La matriz resultado se guarda en `matriz_c.txt`.
+1. **Overhead de IPC**
+
+   * 🛠️ C: `shmget`/`shmat` añade coste fijo, pero evita copias extra.
+   * 🐹 Go: Pipes requieren serialización/parsing de texto → overhead elevado.
+
+2. **Speedup vs Tamaño**
+
+   * Ambos muestran **speedup < 1** para matrices pequeñas (\~µs).
+   * Go 📈 (0.53× en K=1) supera a C (0.02×) en matrices mínimas.
+
+3. **Escalabilidad**
+
+   * Más procesos (K↑) **no mejora**; overhead crece más rápido que computo.
+
+4. **Recomendaciones**
+
+   * 🖥️ Probar con matrices ≥500×500 para amortizar IPC.
+   * 🐹 Go: considerar compartir memoria (`golang.org/x/sys/unix`).
+   * 🛠️ C: comparar pipes vs shm según entorno.
 
 ---
+
+## 🎯 4. Conclusión
+
+> Las implementaciones actuales son **prueba de concepto**. Para medir paralelismo real:
+>
+> * ➡️ Generar matrices grandes.
+> * 📈 Graficar speedup vs K.
+> * 🔄 Evaluar distintos métodos de IPC.
+
+---
+
+## 🚀 5. ¡Manos a la Obra! Uso
+
+### 🛠️ En C (Memoria Compartida)
+
+```bash
+gcc -o matrix_mul matrix_mul.c -lrt
+./matrix_mul <K>
+```
+
+### 🐹 En Go (Pipes)
+
+```bash
+go build -o matrix_mul matrix_mul.go
+./matrix_mul <K>
+```
+
+💾 **Archivos necesarios:** `matriz_a.txt`, `matriz_b.txt`.
+📂 **Salida:** `matriz_c.txt`.
+
+---
+
+
+![Performance](https://img.shields.io/badge/Benchmarking-Experimental-orange) ![License](https://img.shields.io/badge/License-MIT-green)
