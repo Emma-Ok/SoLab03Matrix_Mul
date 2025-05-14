@@ -1,6 +1,60 @@
 # Matrix Multiplication con Procesos en Go y C
 Realizado por Emmanuel Bustamante Valbuena & Sebastian alaya
 
+# Multiplicación de Matrices con Procesos en C
+
+Este repositorio contiene la implementación en C para multiplicar dos matrices grandes utilizando:
+
+* **Modo Secuencial** (1 proceso)
+* **Modo Paralelo** (K procesos OS) con comunicación vía **memoria compartida (shm)**
+
+---
+
+## Resultados de Ejecución en C
+
+| Procesos (K) | Tiempo Secuencial (s) | Tiempo Paralelo (s) | Speedup |
+| -----------: | --------------------: | ------------------: | ------: |
+|            1 |              0.000013 |            0.000606 |   0.02× |
+|            2 |              0.000013 |            0.000838 |   0.02× |
+|            4 |              0.000013 |            0.001196 |   0.01× |
+|            6 |              0.000138 |            0.001717 |   0.08× |
+|            8 |              0.000013 |            0.001839 |   0.01× |
+
+> **Nota:** El tiempo secuencial se midió en una sola ejecución. El tiempo paralelo incluye el overhead de `fork()` y sincronización.
+
+---
+
+## Conclusión
+
+* Los resultados muestran speedups muy inferiores a 1 para todas las configuraciones, lo cual indica que el overhead de creación de procesos y el acceso a memoria compartida domina en matrices de pequeño tamaño.
+* Para evidenciar mejoras reales de paralelismo a nivel de proceso, es indispensable usar matrices de mayor dimensión (por ejemplo, ≥500×500), donde el coste computacional supere el overhead de IPC.
+* **Recomendación:** Generar datos sintéticos grandes, volver a medir y graficar el comportamiento de speedup vs. número de procesos.
+
+---
+
+## Uso
+
+1. Preparar archivos de entrada `matriz_a.txt` y `matriz_b.txt`.
+2. Compilar:
+
+   ```bash
+   gcc -o matrix_mul matrix_mul.c -lrt
+   ```
+3. Ejecutar en modo secuencial (por defecto K=4):
+
+   ```bash
+   ./matrix_mul
+   ```
+4. Ejecutar con K procesos:
+
+   ```bash
+   ./matrix_mul <K>
+   ```
+5. La matriz resultado se guarda en `matriz_c.txt`.
+
+
+----
+
 Este repositorio contiene una implementación en Go para multiplicar dos matrices grandes utilizando:
 
 - **Modo Secuencial** (1 proceso)
@@ -48,5 +102,3 @@ Este repositorio contiene una implementación en Go para multiplicar dos matrice
 5. La matriz resultado se guarda en `matriz_c.txt`.
 
 ---
-
-¡Bienvenido(a) a contribuir issues o pull requests para mejoras!
